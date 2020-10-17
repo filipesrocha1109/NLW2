@@ -10,4 +10,4 @@ function TeacherForm(){
     )
 }
 
-export default TeacherForm;
+export default TeacherForm; 

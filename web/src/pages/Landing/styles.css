@@ -117,6 +117,6 @@
     }
     .total-connections {
       grid-area: total;
-      justify-self: flex-end;
+      justify-self: end;
     }
   }

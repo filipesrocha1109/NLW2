@@ -7,22 +7,15 @@
 // npm install knex sqlite3  = knex serve para manipulação de banco de dados com js
 
 import express from 'express';
+import routes from './routes';
 
 const app = express();
 
 // diz pro express que estamos ultilizando o formato json
 app.use(express.json());
-
-// Corpo (request.body) = Dados para criação ou atualização de um registro
-// Route Params (request.params) = Identificar qual recurso atualizar ou deletar
-// Query Params (request.query) = paginação, filtro, ordenação
+app.use(routes);
 
 
-app.get('/', (request, response) => {
-
-    return response.json({message: "Hello Word"});
-
-});
 
 
 // .liste() ouvir requisições http, definido a porta = localhost:3333

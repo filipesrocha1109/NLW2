@@ -4,7 +4,6 @@ import PageHeader from '../../components/PageHeader/insdex';
 import TeacherItem from '../../components/TeacherItem';
 
 
-
 import './styles.css';
 
 

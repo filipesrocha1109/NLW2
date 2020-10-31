@@ -3,86 +3,23 @@
 // Query Params (request.query) = paginação, filtro, ordenação
 
 import express from 'express'
-import db from './database/connection';
-import convertHourToMinutes from './utils/convertHourToMinutes';
+import ClassesController from './controllers/ClassesController';
+import ConnectionsController from './controllers/ConnectionsControllers';
+
 
 const routes = express.Router();
+const classesController = new ClassesController();
+const connectionsController = new ConnectionsController();
 
-// Define o formato de um objeto
-interface scheduleItem{
-    week_day : number;
-    from : string;
-    to : string;
-}
+// Classes
+routes.post('/classes', classesController.create);
+routes.get('/classes', classesController.index);
+
+// Connections
+routes.post('/connections', connectionsController.create);
+routes.get('/connections', connectionsController.index);
 
 
-// Adicionar aulas
-
-routes.post('/classes', async (request, response) => {
-
-    const {
-        name,
-        avatar,
-        whatsapp,
-        bio,
-        subject,
-        cost,
-        schedule
-    } = request.body;
-
-    //cria uma transaction para rodar as inserções, caso de erro em aguma inserção não salva nada.
-    const trx = await db.transaction();
-
-    try{
-        // insertedUsersIds = pega os ids inseridos no insert
-        const insertedUsersIds =  await trx('users').insert({
-            name,
-            avatar,
-            whatsapp,
-            bio
-        });
-        //Pega o primeiro id que foi inserido e passa paran a tabela de classes
-        const user_id = insertedUsersIds[0];
-
-        const insertedClassesIds = await trx('classes').insert({
-            subject,
-            cost,
-            user_id,
-        });
-
-        const class_id = insertedClassesIds[0];
-
-        const classSchedule = schedule.map((scheduleItem: scheduleItem) => {
-            
-            return{
-                class_id,
-                week_day: scheduleItem.week_day,
-                from: convertHourToMinutes(scheduleItem.from),
-                to: convertHourToMinutes(scheduleItem.to),
-
-            }
-        })
-
-        // quando passa um array ele salva em cada posição uma nova linha.
-        await trx('class_schedule').insert(classSchedule)
-
-        // se transaction sem erros , faz a inserção.
-        await trx.commit();
-
-        // status de criado com sucesso
-        return response.status(201).send();
-
-    } catch (err){
-
-        await trx.rollback();
-
-        // bad request
-        return response.status(400).json({
-            error: "Unexpected error while creating new class"
-        })
-    }
-
-});
 
 
 export default routes;
